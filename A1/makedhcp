@@ -1,0 +1,21 @@
+PATH=/bin:/usr/bin
+set -e
+cd $HOME/hosts
+
+#print fixed text
+echo "authoritative;
+deny unknown-clients;
+option routers 10.3.8.16;
+option domain-name-servers 10.3.8.20, 10.3.8.21;
+
+subnet 192.168.0.0 netmask 255.255.0.0 {
+}"
+
+#print host information
+for i in `ls -rt`
+do
+	echo "host $i {
+	hardware ethernet" `cat $i|sed -n 1p`";
+	fixed-address" `cat $i|sed -n 2p`";
+}"
+done

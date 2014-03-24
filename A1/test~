@@ -1,0 +1,1 @@
+cat file1| sed 1p|echo hi

@@ -1,0 +1,38 @@
+PATH=/bin:/usr/bin
+set -e
+cd $HOME/hosts
+
+#find max third octet
+maxthird=1
+for i in `ls`
+do
+	third=`cat $i|sed -n '2 s/.*\..*\.\(.*\)\..*/\1/ p'`
+	if test $third -gt $maxthird
+	then
+		maxthird=$third
+	fi
+done
+
+#find max fourth octet
+maxfourth=0
+for i in `ls`
+do
+	fourth=`cat $i|sed -n "2 s/.*\..*\.$maxthird\.\(.*\)/\1/ p"`
+	if test $fourth && test $fourth -gt $maxfourth
+	then
+		maxfourth=$fourth
+	fi
+done
+
+#increment fourth octet with bouunds
+if test $maxfourth -ge 255
+then
+	maxthird=`expr $maxthird + 1`
+	maxfourth=1
+else
+	maxfourth=`expr $maxfourth + 1`
+fi
+
+#create/print to file
+echo "$2
+192.168.$maxthird.$maxfourth">$1

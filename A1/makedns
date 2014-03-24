@@ -1,0 +1,35 @@
+PATH=/bin:/usr/bin
+set -e
+cd $HOME
+
+#get new serial
+if cat lastserial>/dev/null 2>/dev/null
+then
+	serialdate=`cat lastserial|sed -n 's/\(........\)../\1/ p'`
+	if test $serialdate && test `date +%Y%m%d` -le $serialdate
+	then
+		#use a temp since we can't nest cat in expr
+		previousSerial=`cat lastserial`
+		serial=`expr $previousSerial + 1`
+	else
+		serial=`date +%Y%m%d`00
+	fi
+	
+else
+	serial=`date +%Y%m%d`00
+
+fi
+
+#put new serial in file
+echo $serial>$HOME/lastserial
+
+#print what we need
+echo "example.org IN SOA ns1.example.org $serial
+	IN NS 0 ns1.example.net.
+	IN NS 0 ns2.example.net.
+	IN MX 0 mail.example.net."
+
+for i in `ls -rt hosts`
+do
+	echo $i IN A `cat hosts/$i| sed -n 2p`
+done

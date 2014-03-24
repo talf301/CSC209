@@ -1,0 +1,16 @@
+PATH=/bin:/usr/bin
+set -e
+sum=0
+counter=0
+for i in `cat "$@"`
+do
+	sum=`expr $i + $sum`
+	counter=`expr $counter + 1`
+done
+#ensure no divide by 0 happens
+if `test $counter -gt 0`
+then
+	echo `expr $sum / $counter`
+else
+	echo average: no input values
+fi
